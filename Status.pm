@@ -60,6 +60,7 @@ sub _print {
 
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$self->{'_dwg_file'},
+		'',
 		'Axis: '.$self->{'_axis'}.$S3.'Fill: '.$self->{'_fill'}.
 		$S3.'Grid: '.$self->{'_grid'}.$S3.'Ortho: '.$self->{'_ortho'}.
 		$S3.'Snap: '.$self->{'_snap'}.$S3.'Tablet: '.$self->{'_tablet'},
@@ -81,7 +82,7 @@ sub _process {
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
 	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
-	$self->{'_snap'} = $h->snap ? 'On' : 'off';
+	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
 	# TODO
 	$self->{'_tablet'} = 'Off';
 
