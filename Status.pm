@@ -7,6 +7,9 @@ use CAD::Format::DWG::1_40;
 use Class::Utils qw(set_params);
 use Error::Pure qw(err);
 use Getopt::Std;
+use Readonly;
+
+Readonly::Scalar our $S3 => q{   };
 
 our $VERSION = 0.01;
 
@@ -57,6 +60,9 @@ sub _print {
 
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$self->{'_dwg_file'},
+		'Axis: '.$self->{'_axis'}.$S3.'Fill: '.$self->{'_fill'}.
+		$S3.'Grid: '.$self->{'_grid'}.$S3.'Ortho: '.$self->{'_ortho'}.
+		$S3.'Snap: '.$self->{'_snap'}.$S3.'Tablet: '.$self->{'_tablet'},
 	);
 
 	print join "\n", @ret;
@@ -69,8 +75,15 @@ sub _process {
 	my $self = shift;
 
 	my $dwg = CAD::Format::DWG::1_40->from_file($self->{'_dwg_file'});
-
-	$self->{'_entities'} = $dwg->header->number_of_entities;
+	my $h = $dwg->header;
+	$self->{'_entities'} = $h->number_of_entities;
+	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
+	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
+	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
+	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
+	$self->{'_snap'} = $h->snap ? 'On' : 'off';
+	# TODO
+	$self->{'_tablet'} = 'Off';
 
 	return;
 }
