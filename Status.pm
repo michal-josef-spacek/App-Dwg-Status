@@ -58,12 +58,34 @@ sub run {
 sub _print {
 	my $self = shift;
 
+	my $dec = 4;
+
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$self->{'_dwg_file'},
+		# TODO Use sprintf to space to X/Y.
+		'Limits are:          X:'.sprintf('%10.'.$dec.'f', $self->{'_limits_x_min'}).
+			sprintf('%10.'.$dec.'f', $self->{'_limits_x_max'}),
+		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_limits_y_min'}).
+			sprintf('%10.'.$dec.'f', $self->{'_limits_y_max'}),
+		'Drawing uses:        X:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_x_min'}).
+			sprintf('%10.'.$dec.'f', $self->{'_drawing_x_max'}),
+		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_y_min'}).
+			sprintf('%10.'.$dec.'f', $self->{'_drawing_y_max'}),
+		'Display shows:       X:'.sprintf('%10.'.$dec.'f', $self->{'_display_x_min'}).
+			sprintf('%10.'.$dec.'f', $self->{'_display_x_max'}),
+		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_display_y_min'}).
+			sprintf('%10.'.$dec.'f', $self->{'_display_y_max'}),
+		'Insertion base is:   X:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_x'}),
+		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_y'}),
+		'Snap resolution:'.sprintf('%10.'.$dec.'f', $self->{'_snap_resolution'}).
+			'  Grid value:'.sprintf('%10.'.$dec.'f', $self->{'_grid_value'}),
+		'Axis value:'.sprintf('%10.'.$dec.'f', $self->{'_axis_value'}),
+		'Current layer:   '.$self->{'_current_layer'}.
+			'  Current color: '.$self->{'_current_color'},
 		'',
 		'Axis: '.$self->{'_axis'}.$S3.'Fill: '.$self->{'_fill'}.
-		$S3.'Grid: '.$self->{'_grid'}.$S3.'Ortho: '.$self->{'_ortho'}.
-		$S3.'Snap: '.$self->{'_snap'}.$S3.'Tablet: '.$self->{'_tablet'},
+			$S3.'Grid: '.$self->{'_grid'}.$S3.'Ortho: '.$self->{'_ortho'}.
+			$S3.'Snap: '.$self->{'_snap'}.$S3.'Tablet: '.$self->{'_tablet'},
 	);
 
 	print join "\n", @ret;
@@ -77,7 +99,20 @@ sub _process {
 
 	my $dwg = CAD::Format::DWG::1_40->from_file($self->{'_dwg_file'});
 	my $h = $dwg->header;
+
 	$self->{'_entities'} = $h->number_of_entities;
+
+	# TODO Get.
+	$self->{'_current_layer'} = 1;
+	$self->{'_current_color'} = 1;
+
+	# TODO Get
+	$self->{'_snap_resolution'} = 0.25;
+	$self->{'_grid_value'} = 0.25;
+
+	# TODO Get.
+	$self->{'_axis_value'} = 0.25;
+
 	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
@@ -85,6 +120,32 @@ sub _process {
 	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
 	# TODO
 	$self->{'_tablet'} = 'Off';
+
+	# Limits.
+	# TODO Get.
+	$self->{'_limits_x_min'} = 0;
+	$self->{'_limits_x_max'} = 10;
+	$self->{'_limits_y_min'} = 0;
+	$self->{'_limits_y_max'} = 10;
+
+	# Drawing.
+	# TODO Get.
+	$self->{'_drawing_x_min'} = 2;
+	$self->{'_drawing_x_max'} = 5;
+	$self->{'_drawing_y_min'} = 2;
+	$self->{'_drawing_y_max'} = 5;
+
+	# Display.
+	# TODO Get.
+	$self->{'_display_x_min'} = 3;
+	$self->{'_display_x_max'} = 4;
+	$self->{'_display_y_min'} = 3;
+	$self->{'_display_y_max'} = 4;
+
+	# Insertion base.
+	# TODO Get
+	$self->{'_insertion_base_x'} = '0.0000';
+	$self->{'_insertion_base_y'} = '0.0000';
 
 	return;
 }
