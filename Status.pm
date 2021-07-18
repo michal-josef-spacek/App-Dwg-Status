@@ -102,9 +102,8 @@ sub _process {
 
 	$self->{'_entities'} = $h->number_of_entities;
 
-	# TODO Get.
-	$self->{'_current_layer'} = 1;
-	$self->{'_current_color'} = 1;
+	$self->{'_current_layer'} = $h->actual_layer;
+	$self->{'_current_color'} = $h->actual_color;
 
 	# TODO Get
 	$self->{'_snap_resolution'} = 0.25;
