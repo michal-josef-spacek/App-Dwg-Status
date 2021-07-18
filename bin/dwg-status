@@ -1,0 +1,89 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use App::Dwg::Status;
+
+our $VERSION = 0.01;
+
+# Run.
+exit App::Dwg::Status->new->run;
+
+# Print version.
+sub VERSION_MESSAGE {
+	print $VERSION."\n";
+	exit 0;
+}
+
+__END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+dwg-status - Script with output like AutoCAD status command.
+
+=head1 SYNOPSIS
+
+ dwg-status [-h] [--version] dwg_file
+
+=head1 DESCRIPTION
+
+TODO
+
+=head1 ARGUMENTS
+
+=over 8
+
+=item * C<-h>
+
+ Print help.
+
+=item * C<--version>
+
+ Print version of script.
+
+=item * C<dwg_file>
+
+ AutoCAD DWG file.
+
+=back
+
+=head1 EXAMPLE
+
+ dwg-status -h
+
+=head1 SEE ALSO
+
+=over
+
+=item L<dwg-list>
+
+TODO
+
+=back
+
+=head1 REPOSITORY
+
+L<https://github.com/michal-josef-spacek/App-Dwg-Status>
+
+=head1 AUTHOR
+
+Michal Josef Špaček L<mailto:skim@cpan.org>
+
+L<http://skim.cz>
+
+=head1 LICENSE AND COPYRIGHT
+
+© 2021 Michal Josef Špaček
+
+BSD 2-Clause License
+
+=head1 VERSION
+
+0.01
+
+=cut

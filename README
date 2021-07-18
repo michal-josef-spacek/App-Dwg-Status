@@ -1,0 +1,45 @@
+NAME
+    dwg-status - Script with output like AutoCAD status command.
+
+SYNOPSIS
+     dwg-status [-h] [--version] dwg_file
+
+DESCRIPTION
+    TODO
+
+ARGUMENTS
+    *       "-h"
+
+             Print help.
+
+    *       "--version"
+
+             Print version of script.
+
+    *       "dwg_file"
+
+             AutoCAD DWG file.
+
+EXAMPLE
+     dwg-status -h
+
+SEE ALSO
+    dwg-list
+        TODO
+
+REPOSITORY
+    <https://github.com/michal-josef-spacek/App-Dwg-Status>
+
+AUTHOR
+    Michal Josef Špaček <mailto:skim@cpan.org>
+
+    <http://skim.cz>
+
+LICENSE AND COPYRIGHT
+    © 2021 Michal Josef Špaček
+
+    BSD 2-Clause License
+
+VERSION
+    0.01
+
