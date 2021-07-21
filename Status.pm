@@ -5,6 +5,7 @@ use warnings;
 
 use CAD::Format::DWG::1_40;
 use Class::Utils qw(set_params);
+use Data::IEEE754 qw(unpack_double_be);
 use Error::Pure qw(err);
 use Getopt::Std;
 use Readonly;
@@ -121,11 +122,15 @@ sub _process {
 	$self->{'_tablet'} = 'Off';
 
 	# Limits.
-	# TODO Get.
-	$self->{'_limits_x_min'} = 0;
-	$self->{'_limits_x_max'} = 10;
-	$self->{'_limits_y_min'} = 0;
-	$self->{'_limits_y_max'} = 10;
+	# XXX Reversed data in CAD::Format::DWG::1_40?
+	my $rev_min_x = reverse $h->limits_min_x;
+	my $rev_min_y = reverse $h->limits_min_y;
+	my $rev_max_x = reverse $h->limits_max_x;
+	my $rev_max_y = reverse $h->limits_max_y;
+	$self->{'_limits_x_min'} = unpack_double_be($rev_min_x);
+	$self->{'_limits_y_min'} = unpack_double_be($rev_min_y);
+	$self->{'_limits_x_max'} = unpack_double_be($rev_max_x);
+	$self->{'_limits_y_max'} = unpack_double_be($rev_max_y);
 
 	# Drawing.
 	# TODO Get.
