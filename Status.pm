@@ -106,8 +106,9 @@ sub _process {
 	$self->{'_current_layer'} = $h->actual_layer;
 	$self->{'_current_color'} = $h->actual_color;
 
+	my $rev_snap_resolution = reverse $h->snap_value;
+	$self->{'_snap_resolution'} = unpack_double_be($rev_snap_resolution);
 	# TODO Get
-	$self->{'_snap_resolution'} = 0.25;
 	$self->{'_grid_value'} = 0.25;
 
 	# TODO Get.
