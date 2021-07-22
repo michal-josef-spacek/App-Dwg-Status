@@ -111,8 +111,8 @@ sub _process {
 	# TODO Get
 	$self->{'_grid_value'} = 0.25;
 
-	# TODO Get.
-	$self->{'_axis_value'} = 0.25;
+	my $rev_axis_value = reverse $h->axis_value;
+	$self->{'_axis_value'} = unpack_double_be($rev_axis_value);
 
 	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
