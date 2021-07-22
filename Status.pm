@@ -63,21 +63,20 @@ sub _print {
 
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$self->{'_dwg_file'},
-		# TODO Use sprintf to space to X/Y.
-		'Limits are:          X:'.sprintf('%10.'.$dec.'f', $self->{'_limits_x_min'}).
+		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_limits_x_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_limits_x_max'}),
-		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_limits_y_min'}).
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_limits_y_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_limits_y_max'}),
-		'Drawing uses:        X:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_x_min'}).
+		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_x_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_drawing_x_max'}),
-		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_y_min'}).
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_y_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_drawing_y_max'}),
-		'Display shows:       X:'.sprintf('%10.'.$dec.'f', $self->{'_display_x_min'}).
+		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_display_x_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_display_x_max'}),
-		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_display_y_min'}).
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_display_y_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_display_y_max'}),
-		'Insertion base is:   X:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_x'}),
-		'                     Y:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_y'}),
+		sprintf('%-21s', 'Insertion base is:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_x'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_y'}),
 		'Snap resolution:'.sprintf('%10.'.$dec.'f', $self->{'_snap_resolution'}).
 			'  Grid value:'.sprintf('%10.'.$dec.'f', $self->{'_grid_value'}),
 		'Axis value:'.sprintf('%10.'.$dec.'f', $self->{'_axis_value'}),
