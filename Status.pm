@@ -107,8 +107,8 @@ sub _process {
 
 	my $rev_snap_resolution = reverse $h->snap_resolution;
 	$self->{'_snap_resolution'} = unpack_double_be($rev_snap_resolution);
-	# TODO Get
-	$self->{'_grid_value'} = 0.25;
+	my $rev_grid_value = reverse $h->grid_value;
+	$self->{'_grid_value'} = unpack_double_be($rev_grid_value);
 
 	my $rev_axis_value = reverse $h->axis_value;
 	$self->{'_axis_value'} = unpack_double_be($rev_axis_value);
