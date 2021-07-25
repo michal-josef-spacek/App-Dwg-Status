@@ -134,11 +134,14 @@ sub _process {
 	$self->{'_limits_y_max'} = unpack_double_be($rev_max_y);
 
 	# Drawing.
-	# TODO Get.
-	$self->{'_drawing_x_min'} = 2;
-	$self->{'_drawing_x_max'} = 5;
-	$self->{'_drawing_y_min'} = 2;
-	$self->{'_drawing_y_max'} = 5;
+	my $rev_drawing_min_x = reverse $h->drawing_min_x;
+	my $rev_drawing_min_y = reverse $h->drawing_min_y;
+	my $rev_drawing_max_x = reverse $h->drawing_max_x;
+	my $rev_drawing_max_y = reverse $h->drawing_max_y;
+	$self->{'_drawing_x_min'} = unpack_double_be($rev_drawing_min_x);
+	$self->{'_drawing_x_max'} = unpack_double_be($rev_drawing_min_y);
+	$self->{'_drawing_y_min'} = unpack_double_be($rev_drawing_max_x);
+	$self->{'_drawing_y_max'} = unpack_double_be($rev_drawing_max_y);
 
 	# Display.
 	# TODO Get.
