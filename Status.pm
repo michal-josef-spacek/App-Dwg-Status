@@ -147,9 +147,10 @@ sub _process {
 	$self->{'_display_y_max'} = 4;
 
 	# Insertion base.
-	# TODO Get
-	$self->{'_insertion_base_x'} = '0.0000';
-	$self->{'_insertion_base_y'} = '0.0000';
+	my $rev_insertion_base_x = reverse $h->insertion_base_x;
+	my $rev_insertion_base_y = reverse $h->insertion_base_y;
+	$self->{'_insertion_base_x'} = unpack_double_be($rev_insertion_base_x);
+	$self->{'_insertion_base_y'} = unpack_double_be($rev_insertion_base_y);
 
 	return;
 }
