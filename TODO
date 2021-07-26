@@ -2,8 +2,12 @@ TODO
 ====
 1. Support AC1.40 file
 2. implement tablet value
+Seems not saved in dwg file
 3. limits reversed in CAD::Format::DWG::1_40?
-4.
+4. Tests across legacy 1.40 autocad
+5. pretty version support (not legacy 1.40 autocad)
+6. Tests for pretty version
+7.
 
 Applied
 =======
