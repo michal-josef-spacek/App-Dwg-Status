@@ -68,10 +68,10 @@ sub _print {
 			sprintf('%10.'.$dec.'f', $self->{'_limits_x_max'}),
 		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_limits_y_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_limits_y_max'}),
-		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_x_min'}).
-			sprintf('%10.'.$dec.'f', $self->{'_drawing_x_max'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_y_min'}).
-			sprintf('%10.'.$dec.'f', $self->{'_drawing_y_max'}),
+		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_x_first'}).
+			sprintf('%10.'.$dec.'f', $self->{'_drawing_x_second'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_y_first'}).
+			sprintf('%10.'.$dec.'f', $self->{'_drawing_y_second'}),
 		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_display_x_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_display_x_max'}),
 		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_display_y_min'}).
@@ -134,14 +134,14 @@ sub _process {
 	$self->{'_limits_y_max'} = unpack_double_be($rev_max_y);
 
 	# Drawing.
-	my $rev_drawing_min_x = reverse $h->drawing_min_x;
-	my $rev_drawing_min_y = reverse $h->drawing_min_y;
-	my $rev_drawing_max_x = reverse $h->drawing_max_x;
-	my $rev_drawing_max_y = reverse $h->drawing_max_y;
-	$self->{'_drawing_x_min'} = unpack_double_be($rev_drawing_min_x);
-	$self->{'_drawing_x_max'} = unpack_double_be($rev_drawing_min_y);
-	$self->{'_drawing_y_min'} = unpack_double_be($rev_drawing_max_x);
-	$self->{'_drawing_y_max'} = unpack_double_be($rev_drawing_max_y);
+	my $rev_drawing_first_x = reverse $h->drawing_first_x;
+	my $rev_drawing_first_y = reverse $h->drawing_first_y;
+	my $rev_drawing_second_x = reverse $h->drawing_second_x;
+	my $rev_drawing_second_y = reverse $h->drawing_second_y;
+	$self->{'_drawing_x_first'} = unpack_double_be($rev_drawing_first_x);
+	$self->{'_drawing_y_first'} = unpack_double_be($rev_drawing_first_y);
+	$self->{'_drawing_x_second'} = unpack_double_be($rev_drawing_second_x);
+	$self->{'_drawing_y_second'} = unpack_double_be($rev_drawing_second_y);
 
 	# Display.
 	# TODO Get.
