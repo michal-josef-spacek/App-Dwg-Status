@@ -136,13 +136,10 @@ sub _process_1_40 {
 	$self->{'_current_layer'} = $h->actual_layer;
 	$self->{'_current_color'} = $h->actual_color;
 
-	my $rev_snap_resolution = reverse $h->snap_resolution;
-	$self->{'_snap_resolution'} = unpack_double_be($rev_snap_resolution);
-	my $rev_grid_value = reverse $h->grid_value;
-	$self->{'_grid_value'} = unpack_double_be($rev_grid_value);
+	$self->{'_snap_resolution'} = unpack 'd<', $h->snap_resolution;
+	$self->{'_grid_value'} = unpack 'd<', $h->grid_value;
 
-	my $rev_axis_value = reverse $h->axis_value;
-	$self->{'_axis_value'} = unpack_double_be($rev_axis_value);
+	$self->{'_axis_value'} = unpack 'd<', $h->axis_value;
 
 	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
@@ -153,25 +150,16 @@ sub _process_1_40 {
 	$self->{'_tablet'} = 'Off';
 
 	# Limits.
-	# XXX Reversed data in CAD::Format::DWG::1_40?
-	my $rev_min_x = reverse $h->limits_min_x;
-	my $rev_min_y = reverse $h->limits_min_y;
-	my $rev_max_x = reverse $h->limits_max_x;
-	my $rev_max_y = reverse $h->limits_max_y;
-	$self->{'_limits_x_min'} = unpack_double_be($rev_min_x);
-	$self->{'_limits_y_min'} = unpack_double_be($rev_min_y);
-	$self->{'_limits_x_max'} = unpack_double_be($rev_max_x);
-	$self->{'_limits_y_max'} = unpack_double_be($rev_max_y);
+	$self->{'_limits_x_min'} = unpack 'd<', $h->limits_min_x;
+	$self->{'_limits_y_min'} = unpack 'd<', $h->limits_min_y;
+	$self->{'_limits_x_max'} = unpack 'd<', $h->limits_max_x;
+	$self->{'_limits_y_max'} = unpack 'd<', $h->limits_max_y;
 
 	# Drawing.
-	my $rev_drawing_first_x = reverse $h->drawing_first_x;
-	my $rev_drawing_first_y = reverse $h->drawing_first_y;
-	my $rev_drawing_second_x = reverse $h->drawing_second_x;
-	my $rev_drawing_second_y = reverse $h->drawing_second_y;
-	$self->{'_drawing_x_first'} = unpack_double_be($rev_drawing_first_x);
-	$self->{'_drawing_y_first'} = unpack_double_be($rev_drawing_first_y);
-	$self->{'_drawing_x_second'} = unpack_double_be($rev_drawing_second_x);
-	$self->{'_drawing_y_second'} = unpack_double_be($rev_drawing_second_y);
+	$self->{'_drawing_x_first'} = unpack 'd<', $h->drawing_first_x;
+	$self->{'_drawing_y_first'} = unpack 'd<', $h->drawing_first_y;
+	$self->{'_drawing_x_second'} = unpack 'd<', $h->drawing_second_x;
+	$self->{'_drawing_y_second'} = unpack 'd<', $h->drawing_second_y;
 
 	# Display.
 	# TODO Get.
@@ -181,10 +169,8 @@ sub _process_1_40 {
 	$self->{'_display_y_max'} = 4;
 
 	# Insertion base.
-	my $rev_insertion_base_x = reverse $h->insertion_base_x;
-	my $rev_insertion_base_y = reverse $h->insertion_base_y;
-	$self->{'_insertion_base_x'} = unpack_double_be($rev_insertion_base_x);
-	$self->{'_insertion_base_y'} = unpack_double_be($rev_insertion_base_y);
+	$self->{'_insertion_base_x'} = unpack 'd<', $h->insertion_base_x;
+	$self->{'_insertion_base_y'} = unpack 'd<', $h->insertion_base_y;
 
 	return;
 }
