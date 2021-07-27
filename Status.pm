@@ -6,7 +6,6 @@ use warnings;
 use CAD::Format::DWG::1_40;
 use CAD::AutoCAD::Detect qw(detect_dwg_file);
 use Class::Utils qw(set_params);
-use Data::IEEE754 qw(unpack_double_be);
 use Error::Pure qw(err);
 use File::Spec::Functions qw(splitpath);
 use Getopt::Std;
