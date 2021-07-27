@@ -19,6 +19,7 @@ name 'App-Dwg-Status';
 perl_version 5.006;
 readme_from 'bin/dwg-status';
 recursive_author_tests('xt');
+requires 'CAD::AutoCAD::Detect' => 0.02;
 requires 'Class::Utils' => 0;
 requires 'Error::Pure' => 0;
 requires 'Getopt::Std' => 0;

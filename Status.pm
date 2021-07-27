@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use CAD::Format::DWG::1_40;
+use CAD::AutoCAD::Detect qw(detect_dwg_file);
 use Class::Utils qw(set_params);
 use Data::IEEE754 qw(unpack_double_be);
 use Error::Pure qw(err);
@@ -48,6 +49,7 @@ sub run {
 	$self->{'_dwg_file'} = shift @ARGV;
 
 	# Process.
+	delete $self->{'_dwg_magic'};
 	$self->_process;
 
 	# Print out.
@@ -57,6 +59,16 @@ sub run {
 }
 
 sub _print {
+	my $self = shift;
+
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->_print_1_40;
+	}
+
+	return;
+}
+
+sub _print_1_40 {
 	my $self = shift;
 
 	# TODO Based on units
@@ -96,6 +108,21 @@ sub _print {
 }
 
 sub _process {
+	my $self = shift;
+
+	$self->{'_dwg_magic'} = detect_dwg_file($self->{'_dwg_file'});
+	if ($self->{'_dwg_magic'}) {
+		if ($self->{'_dwg_magic'} eq 'AC1.40') {
+			return $self->_process_1_40;
+		} else {
+			err 'DWG file with magic string \''.$self->{'_dwg_magic'}.'\' doesn\'t supported.';
+		}
+	} else {
+		err 'File \''.$self->{'_dwg_file'}.'\' isn\'t AutoCAD DWG file.';
+	}
+}
+
+sub _process_1_40 {
 	my $self = shift;
 
 	my $dwg = CAD::Format::DWG::1_40->from_file($self->{'_dwg_file'});
