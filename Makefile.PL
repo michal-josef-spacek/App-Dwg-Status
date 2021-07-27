@@ -22,6 +22,7 @@ recursive_author_tests('xt');
 requires 'CAD::AutoCAD::Detect' => 0.02;
 requires 'Class::Utils' => 0;
 requires 'Error::Pure' => 0;
+requires 'File::Spec::Functions' => 0;
 requires 'Getopt::Std' => 0;
 requires 'Readonly' => 0;
 resources 'bugtracker' => 'https://github.com/michal-josef-spacek/App-Dwg-Status/issues',

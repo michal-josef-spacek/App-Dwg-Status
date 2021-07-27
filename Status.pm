@@ -8,6 +8,7 @@ use CAD::AutoCAD::Detect qw(detect_dwg_file);
 use Class::Utils qw(set_params);
 use Data::IEEE754 qw(unpack_double_be);
 use Error::Pure qw(err);
+use File::Spec::Functions qw(splitpath);
 use Getopt::Std;
 use Readonly;
 
@@ -74,8 +75,10 @@ sub _print_1_40 {
 	# TODO Based on units
 	my $dec = 4;
 
+	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
+
 	my @ret = (
-		'  '.$self->{'_entities'}.' entities in '.$self->{'_dwg_file'},
+		'  '.$self->{'_entities'}.' entities in '.$dwg_file,
 		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_limits_x_min'}).
 			sprintf('%10.'.$dec.'f', $self->{'_limits_x_max'}),
 		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_limits_y_min'}).

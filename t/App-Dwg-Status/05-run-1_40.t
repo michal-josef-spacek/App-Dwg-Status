@@ -15,7 +15,7 @@ my $data_dir = File::Object->new->up->dir('data/AC1.40')->set;
 	$data_dir->file('BLANK.DWG')->s,
 );
 my $right_ret = <<'END';
-  0 entities in /home/skim/data/gitprac/lang/perl/perl_modules/App/App-Dwg/App-Dwg-Status/t/data/AC1.40/BLANK.DWG
+  0 entities in BLANK.DWG
 Limits are:          X:    0.0000   12.0000
                      Y:    0.0000    9.0000
 Drawing uses:        X:    0.0000    0.0000
