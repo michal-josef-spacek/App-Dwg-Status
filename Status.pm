@@ -146,8 +146,7 @@ sub _process_1_40 {
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
 	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
 	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
-	# TODO
-	$self->{'_tablet'} = 'Off';
+	$self->{'_tablet'} = '?';
 
 	# Limits.
 	$self->{'_limits_x_min'} = unpack 'd<', $h->limits_min_x;

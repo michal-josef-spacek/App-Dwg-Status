@@ -28,7 +28,7 @@ Snap resolution:    1.0000  Grid value:    0.0000
 Axis value:    0.0000
 Current layer:   1  Current color: 15
 
-Axis: Off   Fill: On   Grid: Off   Ortho: Off   Snap: Off   Tablet: Off
+Axis: Off   Fill: On   Grid: Off   Ortho: Off   Snap: Off   Tablet: ?
 END
 stdout_is(
 	sub {
