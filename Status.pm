@@ -40,9 +40,9 @@ sub run {
 		|| $self->{'_opts'}->{'h'}) {
 
 		print STDERR "Usage: $0 [-h] [--version] dwg_file\n";
-		print STDERR "\t-h\t\tHelp.\n";
+		print STDERR "\t-h\t\tPrint help.\n";
 		print STDERR "\t--version\tPrint version.\n";
-		print STDERR "\tdwg_file\tAutoCAD DWG file\n";
+		print STDERR "\tdwg_file\tAutoCAD DWG file.\n";
 		return 1;
 	}
 	$self->{'_dwg_file'} = shift @ARGV;
