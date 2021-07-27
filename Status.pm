@@ -3,8 +3,8 @@ package App::Dwg::Status;
 use strict;
 use warnings;
 
-use CAD::Format::DWG::1_40;
 use CAD::AutoCAD::Detect qw(detect_dwg_file);
+use CAD::Format::DWG::1_40;
 use Class::Utils qw(set_params);
 use Error::Pure qw(err);
 use File::Spec::Functions qw(splitpath);
@@ -163,11 +163,11 @@ sub _process_1_40 {
 	$self->{'_drawing_y_second'} = unpack 'd<', $h->drawing_second_y;
 
 	# Display.
-	# TODO Get.
-	$self->{'_display_x_min'} = 3;
-	$self->{'_display_x_max'} = 4;
-	$self->{'_display_y_min'} = 3;
-	$self->{'_display_y_max'} = 4;
+	# TODO Bad
+	$self->{'_display_x_min'} = 0; # $h->display_min_x
+	$self->{'_display_x_max'} = 0; # $h->display_min_y
+	$self->{'_display_y_min'} = 0; # $h->display_max_x
+	$self->{'_display_y_max'} = 0; # $h->display_max_y
 
 	# Insertion base.
 	$self->{'_insertion_base_x'} = unpack 'd<', $h->insertion_base_x;
