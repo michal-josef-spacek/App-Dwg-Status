@@ -136,16 +136,19 @@ sub _process_1_40 {
 	$self->{'_current_layer'} = $h->actual_layer;
 	$self->{'_current_color'} = $h->actual_color;
 
+	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
 	$self->{'_snap_resolution'} = unpack 'd<', $h->snap_resolution;
-	$self->{'_grid_value'} = unpack 'd<', $h->grid_value;
-
-	$self->{'_axis_value'} = unpack 'd<', $h->axis_value;
 
 	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
+	$self->{'_axis_value'} = unpack 'd<', $h->axis_value;
+
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
+
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
+	$self->{'_grid_value'} = unpack 'd<', $h->grid_value;
+
 	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
-	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
+
 	$self->{'_tablet'} = '?';
 
 	# Limits.
