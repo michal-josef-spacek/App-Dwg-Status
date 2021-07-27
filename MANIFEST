@@ -23,5 +23,7 @@ t/App-Dwg-Status/01-use.t
 t/App-Dwg-Status/02-version.t
 t/App-Dwg-Status/03-new.t
 t/App-Dwg-Status/04-run.t
+t/App-Dwg-Status/05-run-1_40.t
+t/data/AC1.40/BLANK.DWG
 xt/App-Dwg-Status/01-pod_coverage.t
 xt/App-Dwg-Status/02-pod.t
