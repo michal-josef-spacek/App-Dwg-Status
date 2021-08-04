@@ -187,7 +187,7 @@ __END__
 
 =head1 NAME
 
-App::Dwg::Status - Base class for cpan-get script.
+App::Dwg::Status - Base class for dwg-status script.
 
 =head1 SYNOPSIS
 
@@ -217,13 +217,10 @@ Returns 1 for error, 0 for success.
  new():
          From Class::Utils::set_params():
                  Unknown parameter '%s'.
-         Parameter 'lwp_user_agent' must be a LWP::UserAgent instance.
 
  run():
-         Cannot download '%s'.
-         Module '%s' doesn't exist.
-         Value 'download_uri' doesn't exist.
-         Value 'uri' doesn't exist.
+         DWG file with magic string '%s' doesn't supported.
+         File '%s' isn't AutoCAD DWG file.
 
 =head1 EXAMPLE
 
@@ -245,13 +242,13 @@ Returns 1 for error, 0 for success.
 
 =head1 DEPENDENCIES
 
+L<CAD::AutoCAD::Detect>,
+L<CAD::Format::DWG::1_40>
 L<Class::Utils>,
 L<Error::Pure>,
+L<File::Spec::Functions>,
 L<Getopt::Std>,
-L<IO::Barf>,
-L<LWP::UserAgent>
-L<Menlo::Index::MetaCPAN>
-L<URI::cpan>.
+L<Readonly>.
 
 =head1 REPOSITORY
 
