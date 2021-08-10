@@ -28,6 +28,7 @@ no_index:
 requires:
   CAD::AutoCAD::Detect: 0.02
   CAD::Format::DWG::1_40: 0
+  CAD::Format::DWG::AC1003: 0
   Class::Utils: 0
   Error::Pure: 0
   File::Spec::Functions: 0

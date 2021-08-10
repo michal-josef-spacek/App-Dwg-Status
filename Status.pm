@@ -5,6 +5,7 @@ use warnings;
 
 use CAD::AutoCAD::Detect qw(detect_dwg_file);
 use CAD::Format::DWG::1_40;
+use CAD::Format::DWG::AC1003;
 use Class::Utils qw(set_params);
 use Error::Pure qw(err);
 use File::Spec::Functions qw(splitpath);
@@ -63,6 +64,8 @@ sub _print {
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->_print_1_40;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->_print_ac1003;
 	}
 
 	return;
@@ -109,13 +112,58 @@ sub _print_1_40 {
 	return;
 }
 
+sub _print_ac1003 {
+	my $self = shift;
+
+	my $luf = $self->{'_linear_units_format'};
+	my $lup = $self->{'_linear_units_precision'};
+
+	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
+
+	my @ret = (
+		'  '.$self->{'_entities'}.' entities in '.$dwg_file,
+		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_limits_x_max'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_limits_y_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_limits_y_max'}),
+		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
+			sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
+			sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'}),
+		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_display_x_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_display_x_max'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_display_y_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_display_y_max'}),
+		sprintf('%-21s', 'Insertion base is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_x'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_y'}),
+		sprintf('%-21s', 'Snap resolution is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_x'}).
+			' Y:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_y'}),
+		sprintf('%-21s', 'Grid spacing is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_x'}).
+			' Y:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_y'}),
+		'Current layer:   '.$self->{'_current_layer'},
+		'Current color: '.$self->{'_current_color'},
+		'Current linetype: '.$self->{'_current_linetype'},
+		'',
+		'Axis: '.$self->{'_axis'}.$S3.'Fill: '.$self->{'_fill'}.
+			$S3.'Grid: '.$self->{'_grid'}.$S3.'Ortho: '.$self->{'_ortho'}.
+			$S3.'Snap: '.$self->{'_snap'}.$S3.'Tablet: '.$self->{'_tablet'},
+	);
+
+	print join "\n", @ret;
+	print "\n";
+
+	return;
+}
+
 sub _process {
 	my $self = shift;
 
 	$self->{'_dwg_magic'} = detect_dwg_file($self->{'_dwg_file'});
 	if ($self->{'_dwg_magic'}) {
-		if ($self->{'_dwg_magic'} eq 'AC1.40') {
-			return $self->_process_1_40;
+		if ($self->{'_dwg_magic'} eq 'AC1.40'
+			|| $self->{'_dwg_magic'} eq 'AC1003') {
+
+			return $self->_process_values;
 		} else {
 			err 'DWG file with magic string \''.$self->{'_dwg_magic'}.'\' doesn\'t supported.';
 		}
@@ -124,27 +172,53 @@ sub _process {
 	}
 }
 
-sub _process_1_40 {
+sub _process_values {
 	my $self = shift;
 
-	my $dwg = CAD::Format::DWG::1_40->from_file($self->{'_dwg_file'});
+	my $dwg;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$dwg = CAD::Format::DWG::1_40->from_file($self->{'_dwg_file'});
+	} else {
+		$dwg = CAD::Format::DWG::AC1003->from_file($self->{'_dwg_file'});
+	}
 	my $h = $dwg->header;
 
 	$self->{'_entities'} = $h->number_of_entities;
 
-	$self->{'_current_layer'} = $h->actual_layer;
-	$self->{'_current_color'} = $h->actual_color;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_current_layer'} = $h->actual_layer;
+		$self->{'_current_color'} = $h->actual_color;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_current_layer'} = 'TODO';
+		$self->{'_current_color'} = 'TODO';
+		$self->{'_current_linetype'} = 'TODO';
+	}
 
 	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
-	$self->{'_snap_resolution'} = unpack 'd<', $h->snap_resolution;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_snap_resolution'} = unpack 'd<', $h->snap_resolution;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_snap_resolution_x'} = unpack 'd<', $h->snap_resolution_x;
+		$self->{'_snap_resolution_y'} = unpack 'd<', $h->snap_resolution_y;
+	}
 
 	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
-	$self->{'_axis_value'} = unpack 'd<', $h->axis_value;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_axis_value'} = unpack 'd<', $h->axis_value;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_axis_value_x'} = unpack 'd<', $h->axis_value_x;
+		$self->{'_axis_value_y'} = unpack 'd<', $h->axis_value_y;
+	}
 
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
 
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_grid_unit'} = unpack 'd<', $h->grid_unit;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_grid_unit_x'} = unpack 'd<', $h->grid_unit_x;
+		$self->{'_grid_unit_y'} = unpack 'd<', $h->grid_unit_y;
+	}
 
 	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
 
