@@ -71,30 +71,30 @@ sub _print {
 sub _print_1_40 {
 	my $self = shift;
 
-	# TODO Based on units
-	my $dec = 4;
+	my $luf = $self->{'_linear_units_format'};
+	my $lup = $self->{'_linear_units_precision'};
 
 	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
 
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$dwg_file,
-		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_limits_x_min'}).
-			sprintf('%10.'.$dec.'f', $self->{'_limits_x_max'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_limits_y_min'}).
-			sprintf('%10.'.$dec.'f', $self->{'_limits_y_max'}),
-		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_x_first'}).
-			sprintf('%10.'.$dec.'f', $self->{'_drawing_x_second'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_drawing_y_first'}).
-			sprintf('%10.'.$dec.'f', $self->{'_drawing_y_second'}),
-		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_display_x_min'}).
-			sprintf('%10.'.$dec.'f', $self->{'_display_x_max'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_display_y_min'}).
-			sprintf('%10.'.$dec.'f', $self->{'_display_y_max'}),
-		sprintf('%-21s', 'Insertion base is:').'X:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_x'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$dec.'f', $self->{'_insertion_base_y'}),
-		'Snap resolution:'.sprintf('%10.'.$dec.'f', $self->{'_snap_resolution'}).
-			'  Grid value:'.sprintf('%10.'.$dec.'f', $self->{'_grid_value'}),
-		'Axis value:'.sprintf('%10.'.$dec.'f', $self->{'_axis_value'}),
+		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_limits_x_max'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_limits_y_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_limits_y_max'}),
+		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
+			sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
+			sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'}),
+		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_display_x_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_display_x_max'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_display_y_min'}).
+			sprintf('%10.'.$lup.'f', $self->{'_display_y_max'}),
+		sprintf('%-21s', 'Insertion base is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_x'}),
+		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_y'}),
+		'Snap resolution:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution'}).
+			'  Grid value:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit'}),
+		'Axis value:'.sprintf('%10.'.$lup.'f', $self->{'_axis_value'}),
 		'Current layer:   '.$self->{'_current_layer'}.
 			'  Current color: '.$self->{'_current_color'},
 		'',
@@ -144,11 +144,15 @@ sub _process_1_40 {
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
 
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
-	$self->{'_grid_value'} = unpack 'd<', $h->grid_value;
+		$self->{'_grid_unit'} = unpack 'd<', $h->grid_unit;
 
 	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
 
 	$self->{'_tablet'} = '?';
+
+	# TODO Used?
+	$self->{'_linear_units_format'} = $h->linear_units_format;
+	$self->{'_linear_units_precision'} = $h->linear_units_precision;
 
 	# Limits.
 	$self->{'_limits_x_min'} = unpack 'd<', $h->limits_min_x;
