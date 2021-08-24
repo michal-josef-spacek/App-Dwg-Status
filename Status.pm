@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use CAD::AutoCAD::Detect qw(detect_dwg_file);
-use CAD::Format::DWG::1_40;
+use CAD::Format::DWG::AC1_40;
 use CAD::Format::DWG::AC1003;
 use Class::Utils qw(set_params);
 use Error::Pure qw(err);
@@ -63,7 +63,7 @@ sub _print {
 	my $self = shift;
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
-		$self->_print_1_40;
+		$self->_print_ac1_40;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
 		$self->_print_ac1003;
 	}
@@ -71,7 +71,7 @@ sub _print {
 	return;
 }
 
-sub _print_1_40 {
+sub _print_ac1_40 {
 	my $self = shift;
 
 	my $luf = $self->{'_linear_units_format'};
@@ -177,7 +177,7 @@ sub _process_values {
 
 	my $dwg;
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
-		$dwg = CAD::Format::DWG::1_40->from_file($self->{'_dwg_file'});
+		$dwg = CAD::Format::DWG::AC1_40->from_file($self->{'_dwg_file'});
 	} else {
 		$dwg = CAD::Format::DWG::AC1003->from_file($self->{'_dwg_file'});
 	}
@@ -321,7 +321,7 @@ Returns 1 for error, 0 for success.
 =head1 DEPENDENCIES
 
 L<CAD::AutoCAD::Detect>,
-L<CAD::Format::DWG::1_40>
+L<CAD::Format::DWG::AC1_40>,
 L<Class::Utils>,
 L<Error::Pure>,
 L<File::Spec::Functions>,

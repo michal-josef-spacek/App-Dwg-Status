@@ -20,7 +20,7 @@ perl_version 5.006;
 readme_from 'bin/dwg-status';
 recursive_author_tests('xt');
 requires 'CAD::AutoCAD::Detect' => 0.02;
-requires 'CAD::Format::DWG::1_40' => 0;
+requires 'CAD::Format::DWG::AC1_40' => 0;
 requires 'CAD::Format::DWG::AC1003' => 0;
 requires 'Class::Utils' => 0;
 requires 'Error::Pure' => 0;
