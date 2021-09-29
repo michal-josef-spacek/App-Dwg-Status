@@ -6,7 +6,8 @@ Seems not saved in dwg file
 4. Tests across legacy 1.40 autocad
 5. pretty version support (not legacy 1.40 autocad)
 6. Tests for pretty version
-7.
+7. Issue with number of entities (AC1.40), because contain tmp entities.
+8.
 
 Applied
 =======
