@@ -196,28 +196,28 @@ sub _process_values {
 
 	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
-		$self->{'_snap_resolution'} = unpack 'd<', $h->snap_resolution;
+		$self->{'_snap_resolution'} = $h->snap_resolution;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_snap_resolution_x'} = unpack 'd<', $h->snap_resolution_x;
-		$self->{'_snap_resolution_y'} = unpack 'd<', $h->snap_resolution_y;
+		$self->{'_snap_resolution_x'} = $h->snap_resolution_x;
+		$self->{'_snap_resolution_y'} = $h->snap_resolution_y;
 	}
 
 	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
-		$self->{'_axis_value'} = unpack 'd<', $h->axis_value;
+		$self->{'_axis_value'} = $h->axis_value;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_axis_value_x'} = unpack 'd<', $h->axis_value_x;
-		$self->{'_axis_value_y'} = unpack 'd<', $h->axis_value_y;
+		$self->{'_axis_value_x'} = $h->axis_value_x;
+		$self->{'_axis_value_y'} = $h->axis_value_y;
 	}
 
 	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
 
 	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
-		$self->{'_grid_unit'} = unpack 'd<', $h->grid_unit;
+		$self->{'_grid_unit'} = $h->grid_unit;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_grid_unit_x'} = unpack 'd<', $h->grid_unit_x;
-		$self->{'_grid_unit_y'} = unpack 'd<', $h->grid_unit_y;
+		$self->{'_grid_unit_x'} = $h->grid_unit_x;
+		$self->{'_grid_unit_y'} = $h->grid_unit_y;
 	}
 
 	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
@@ -229,16 +229,16 @@ sub _process_values {
 	$self->{'_linear_units_precision'} = $h->linear_units_precision;
 
 	# Limits.
-	$self->{'_limits_x_min'} = unpack 'd<', $h->limits_min_x;
-	$self->{'_limits_y_min'} = unpack 'd<', $h->limits_min_y;
-	$self->{'_limits_x_max'} = unpack 'd<', $h->limits_max_x;
-	$self->{'_limits_y_max'} = unpack 'd<', $h->limits_max_y;
+	$self->{'_limits_x_min'} = $h->limits_min_x;
+	$self->{'_limits_y_min'} = $h->limits_min_y;
+	$self->{'_limits_x_max'} = $h->limits_max_x;
+	$self->{'_limits_y_max'} = $h->limits_max_y;
 
 	# Drawing.
-	$self->{'_drawing_x_first'} = unpack 'd<', $h->drawing_first_x;
-	$self->{'_drawing_y_first'} = unpack 'd<', $h->drawing_first_y;
-	$self->{'_drawing_x_second'} = unpack 'd<', $h->drawing_second_x;
-	$self->{'_drawing_y_second'} = unpack 'd<', $h->drawing_second_y;
+	$self->{'_drawing_x_first'} = $h->drawing_first_x;
+	$self->{'_drawing_y_first'} = $h->drawing_first_y;
+	$self->{'_drawing_x_second'} = $h->drawing_second_x;
+	$self->{'_drawing_y_second'} = $h->drawing_second_y;
 
 	# Display.
 	# TODO Bad
@@ -248,8 +248,8 @@ sub _process_values {
 	$self->{'_display_y_max'} = 0; # $h->display_max_y
 
 	# Insertion base.
-	$self->{'_insertion_base_x'} = unpack 'd<', $h->insertion_base_x;
-	$self->{'_insertion_base_y'} = unpack 'd<', $h->insertion_base_y;
+	$self->{'_insertion_base_x'} = $h->insertion_base_x;
+	$self->{'_insertion_base_y'} = $h->insertion_base_y;
 
 	return;
 }
