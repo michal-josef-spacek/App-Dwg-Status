@@ -322,6 +322,7 @@ Returns 1 for error, 0 for success.
 
 L<CAD::AutoCAD::Detect>,
 L<CAD::Format::DWG::AC1_40>,
+L<CAD::Format::DWG::AC1003>,
 L<Class::Utils>,
 L<Error::Pure>,
 L<File::Spec::Functions>,
