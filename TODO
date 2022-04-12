@@ -7,7 +7,10 @@ Seems not saved in dwg file
 5. pretty version support (not legacy 1.40 autocad)
 6. Tests for pretty version
 7. Issue with number of entities (AC1.40), because contain tmp entities.
-8.
+8. In AC1.40 there is possibility of "Dimension arrow size" value is this
+   property is set.
+t/data/AC1.40/DIM_ARROW_SIZE.DWG
+9.
 
 Applied
 =======
