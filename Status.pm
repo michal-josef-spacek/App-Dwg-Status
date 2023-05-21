@@ -183,7 +183,11 @@ sub _process_values {
 	}
 	my $h = $dwg->header;
 
-	$self->{'_entities'} = $h->number_of_entities;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_entities'} = $h->number_of_entities;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_entities'} = $h->variables->num_entities;
+	}
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_current_layer'} = $h->current_layer;
@@ -194,51 +198,82 @@ sub _process_values {
 		$self->{'_current_linetype'} = 'TODO';
 	}
 
-	$self->{'_snap'} = $h->snap ? 'On' : 'Off';
+
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_snap'} = $h->snap ? 'On' : 'Off';
 		$self->{'_snap_resolution'} = $h->snap_resolution;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_snap_resolution_x'} = $h->snap_resolution_x;
-		$self->{'_snap_resolution_y'} = $h->snap_resolution_y;
+		$self->{'_snap'} = $h->variables->snap ? 'On' : 'Off';
+		$self->{'_snap_resolution_x'} = $h->variables->snap_resolution->x;
+		$self->{'_snap_resolution_y'} = $h->variables->snap_resolution->y;
 	}
 
-	$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 		$self->{'_axis_value'} = $h->axis_value->x;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_axis_value_x'} = $h->axis_value_x;
-		$self->{'_axis_value_y'} = $h->axis_value_y;
+		$self->{'_axis'} = $h->variables->axis ? 'On' : 'Off';
+		$self->{'_axis_value_x'} = $h->variables->axis_value->x;
+		$self->{'_axis_value_y'} = $h->variables->axis_value->y;
 	}
 
-	$self->{'_fill'} = $h->fill ? 'On' : 'Off';
-
-	$self->{'_grid'} = $h->grid ? 'On' : 'Off';
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_fill'} = $h->fill ? 'On' : 'Off';
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_fill'} = $h->variables->fill ? 'On' : 'Off';
+	}
+
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_grid'} = $h->grid ? 'On' : 'Off';
 		$self->{'_grid_unit'} = $h->grid_unit;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_grid_unit_x'} = $h->grid_unit_x;
-		$self->{'_grid_unit_y'} = $h->grid_unit_y;
+		$self->{'_grid'} = $h->variables->grid ? 'On' : 'Off';
+		$self->{'_grid_unit_x'} = $h->variables->grid_unit->x;
+		$self->{'_grid_unit_y'} = $h->variables->grid_unit->y;
 	}
 
-	$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_ortho'} = $h->variables->ortho ? 'On' : 'Off';
+	}
 
 	$self->{'_tablet'} = '?';
 
 	# TODO Used?
-	$self->{'_linear_units_format'} = $h->linear_units_format;
-	$self->{'_linear_units_precision'} = $h->linear_units_precision;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_linear_units_format'} = $h->linear_units_format;
+		$self->{'_linear_units_precision'} = $h->linear_units_precision;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_linear_units_format'} = $h->variables->linear_units_format;
+		$self->{'_linear_units_precision'} = $h->variables->linear_units_precision;
+	}
 
 	# Limits.
-	$self->{'_limits_x_min'} = $h->limits_min->x;
-	$self->{'_limits_y_min'} = $h->limits_min->y;
-	$self->{'_limits_x_max'} = $h->limits_max->x;
-	$self->{'_limits_y_max'} = $h->limits_max->y;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_limits_x_min'} = $h->limits_min->x;
+		$self->{'_limits_y_min'} = $h->limits_min->y;
+		$self->{'_limits_x_max'} = $h->limits_max->x;
+		$self->{'_limits_y_max'} = $h->limits_max->y;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_limits_x_min'} = $h->variables->limits_min->x;
+		$self->{'_limits_y_min'} = $h->variables->limits_min->y;
+		$self->{'_limits_x_max'} = $h->variables->limits_max->x;
+		$self->{'_limits_y_max'} = $h->variables->limits_max->y;
+	}
 
 	# Drawing.
-	$self->{'_drawing_x_first'} = $h->drawing_first->x;
-	$self->{'_drawing_y_first'} = $h->drawing_first->y;
-	$self->{'_drawing_x_second'} = $h->drawing_second->x;
-	$self->{'_drawing_y_second'} = $h->drawing_second->y;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_drawing_x_first'} = $h->drawing_first->x;
+		$self->{'_drawing_y_first'} = $h->drawing_first->y;
+		$self->{'_drawing_x_second'} = $h->drawing_second->x;
+		$self->{'_drawing_y_second'} = $h->drawing_second->y;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_drawing_x_first'} = $h->variables->drawing_first->x;
+		$self->{'_drawing_y_first'} = $h->variables->drawing_first->y;
+		$self->{'_drawing_x_second'} = $h->variables->drawing_second->x;
+		$self->{'_drawing_y_second'} = $h->variables->drawing_second->y;
+	}
 
 	# Display.
 	# TODO Bad
@@ -248,8 +283,13 @@ sub _process_values {
 	$self->{'_display_y_max'} = 0; # $h->display_max_y
 
 	# Insertion base.
-	$self->{'_insertion_base_x'} = $h->insertion_base->x;
-	$self->{'_insertion_base_y'} = $h->insertion_base->y;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_insertion_base_x'} = $h->insertion_base->x;
+		$self->{'_insertion_base_y'} = $h->insertion_base->y;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_insertion_base_x'} = $h->variables->insertion_base->x;
+		$self->{'_insertion_base_y'} = $h->variables->insertion_base->y;
+	}
 
 	return;
 }
