@@ -120,16 +120,25 @@ sub _print_ac1003 {
 
 	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
 
+	my @drawing;
+	if ($self->{'_drawing_x_first'} != 1e+20 && $self->{'_drawing_x_second'} != 1e+20
+		&& $self->{'_drawing_y_first'} != -1e+20 && $self->{'_drawing_y_second'} != -1e+20) {
+		push @drawing,
+			sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
+			sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'});
+	} else {
+		push @drawing, sprintf('%-21s', 'Drawing uses:').'*Nothing*';
+	}
+
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$dwg_file,
 		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
 			sprintf('%10.'.$lup.'f', $self->{'_limits_x_max'}),
 		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_limits_y_min'}).
 			sprintf('%10.'.$lup.'f', $self->{'_limits_y_max'}),
-		sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
-			sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
-			sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'}),
+		@drawing,
 		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_display_x_min'}).
 			sprintf('%10.'.$lup.'f', $self->{'_display_x_max'}),
 		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_display_y_min'}).
