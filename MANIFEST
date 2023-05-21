@@ -28,5 +28,6 @@ t/App-Dwg-Status/06-run-AC1003.t
 t/data/AC1.40/BLANK.DWG
 t/data/AC1.40/DIM_ARROW_SIZE.DWG
 t/data/AC1003/BLANK.DWG
+t/data/AC1003/DRAWING.DWG
 xt/App-Dwg-Status/01-pod_coverage.t
 xt/App-Dwg-Status/02-pod.t

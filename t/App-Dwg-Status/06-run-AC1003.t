@@ -3,7 +3,7 @@ use warnings;
 
 use App::Dwg::Status;
 use File::Object;
-use Test::More 'tests' => 2;
+use Test::More 'tests' => 3;
 use Test::NoWarnings;
 use Test::Output;
 
@@ -25,9 +25,9 @@ Insertion base is   X:    0.0000   Y:    0.0000   Z:    0.0000
 Snap resolution is  X:    1.0000   Y:    1.0000
 Grid spacing is     X:    0.0000   Y:    0.0000
 
-Current layer:     0
-Current color:     BYLAYER -- 7 (white)
-Current linetype:  BYLAYER -- CONTINUOUS
+Current layer:    0
+Current color:    BYLAYER -- 7 (white)
+Current linetype: BYLAYER -- CONTINUOUS
 Current elevation:    0.0000  thickness:    0.0000
 Axis off  Fill on  Grid off  Ortho off  Qtext off  Snap off  Tablet off
 Object snap modes: None
@@ -39,4 +39,36 @@ stdout_is(
 	},
 	$right_ret,
 	"Get status of 'BLANK.DWG' file.",
+);
+
+# Test.
+@ARGV = (
+	$data_dir->file('DRAWING.DWG')->s,
+);
+$right_ret = <<'END';
+    1 entities in DRAWING.DWG
+Limits are          X:    0.0000    12.0000  (Off)
+                    Y:    0.0000     9.0000
+Drawing uses        X:    1.0000     3.0000
+                    Y:    2.0000     4.0000
+Display shows       X:    0.0000    14.7563
+                    Y:    0.0000     9.0000
+Insertion base is   X:    0.0000   Y:    0.0000   Z:    0.0000
+Snap resolution is  X:    1.0000   Y:    1.0000
+Grid spacing is     X:    0.0000   Y:    0.0000
+
+Current layer:    0
+Current color:    BYLAYER -- 7 (white)
+Current linetype: BYLAYER -- CONTINUOUS
+Current elevation:    0.0000  thickness:    0.0000
+Axis off  Fill on  Grid off  Ortho off  Qtext off  Snap off  Tablet off
+Object snap modes: None
+END
+stdout_is(
+	sub {
+		App::Dwg::Status->new->run;
+		return;
+	},
+	$right_ret,
+	"Get status of 'DRAWING.DWG' file.",
 );

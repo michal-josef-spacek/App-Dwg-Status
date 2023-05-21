@@ -12,7 +12,19 @@ use File::Spec::Functions qw(splitpath);
 use Getopt::Std;
 use Readonly;
 
+Readonly::Scalar our $S => q{ };
+Readonly::Scalar our $S2 => q{  };
 Readonly::Scalar our $S3 => q{   };
+Readonly::Scalar our $S4 => q{    };
+Readonly::Hash our %COLORS => (
+	1 => 'red',
+	2 => 'yellow',
+	3 => 'green',
+	4 => 'cyan',
+	5 => 'blue',
+	6 => 'magenta',
+	7 => 'white',
+);
 
 our $VERSION = 0.01;
 
@@ -120,42 +132,104 @@ sub _print_ac1003 {
 
 	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
 
+	# TODO
+	my $limits_off = '(Off)';
+
 	my @drawing;
 	if ($self->{'_drawing_x_first'} != 1e+20 && $self->{'_drawing_x_second'} != 1e+20
 		&& $self->{'_drawing_y_first'} != -1e+20 && $self->{'_drawing_y_second'} != -1e+20) {
 		push @drawing,
-			sprintf('%-21s', 'Drawing uses:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
+			sprintf('%-20s', 'Drawing uses').
+				'X:'.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
+				$S.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
-			sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
+			sprintf('%-20s', '').
+				'Y:'.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
+				$S.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'});
 	} else {
-		push @drawing, sprintf('%-21s', 'Drawing uses:').'*Nothing*';
+		push @drawing, sprintf('%-20s', 'Drawing uses').'*Nothing*';
 	}
 
+	my $current_layer = $self->{'_dwg'}->table_layers->[$self->{'_current_layer'}];
+	my $current_linetype = $self->{'_dwg'}->table_linetypes->[$self->{'_current_layer'}];
+
+	my $current_color_print;
+	if ($self->{'_current_color'} == 256) {
+		$current_color_print = 'BYLAYER';
+	} else {
+		$current_color_print = $self->{'_current_color'};
+	}
+	$current_color_print .= ' -- ';
+	$current_color_print .= $current_layer->color;
+	if (exists $COLORS{$current_layer->color}) {
+		$current_color_print .= ' ('.$COLORS{$current_layer->color}.')';
+	}
+
+	my $current_linetype_print;
+	if ($self->{'_current_linetype'} == 256) {
+		$current_linetype_print = 'BYLAYER';
+	} else {
+		$current_linetype_print = $self->{'_current_linetype'};
+	}
+	$current_linetype_print .= ' -- ';
+	$current_linetype_print .= $current_linetype->linetype_name;
+
+	# TODO
+	my $object_snap_modes = 'None';
+
 	my @ret = (
-		'  '.$self->{'_entities'}.' entities in '.$dwg_file,
-		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
-			sprintf('%10.'.$lup.'f', $self->{'_limits_x_max'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_limits_y_min'}).
+		$S4.$self->{'_entities'}.' entities in '.$dwg_file,
+		sprintf('%-20s', 'Limits are').
+			'X:'.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
+			$S.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_x_max'}).
+			$S2.$limits_off,
+		sprintf('%-20s', '').
+			'Y:'.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_y_min'}).
+			$S.
 			sprintf('%10.'.$lup.'f', $self->{'_limits_y_max'}),
 		@drawing,
-		sprintf('%-21s', 'Display shows:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_display_x_min'}).
+		sprintf('%-20s', 'Display shows').
+			'X:'.
+			sprintf('%10.'.$lup.'f', $self->{'_display_x_min'}).
+			$S.
 			sprintf('%10.'.$lup.'f', $self->{'_display_x_max'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_display_y_min'}).
+		sprintf('%-20s', '').
+			'Y:'.
+			sprintf('%10.'.$lup.'f', $self->{'_display_y_min'}).
+			$S.
 			sprintf('%10.'.$lup.'f', $self->{'_display_y_max'}),
-		sprintf('%-21s', 'Insertion base is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_x'}),
-		sprintf('%-21s', '').'Y:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_y'}),
-		sprintf('%-21s', 'Snap resolution is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_x'}).
-			' Y:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_y'}),
-		sprintf('%-21s', 'Grid spacing is:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_x'}).
-			' Y:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_y'}),
-		'Current layer:   '.$self->{'_current_layer'},
-		'Current color: '.$self->{'_current_color'},
-		'Current linetype: '.$self->{'_current_linetype'},
+		sprintf('%-20s', 'Insertion base is').
+			'X:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_x'}).
+			$S3.'Y:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_y'}).
+			$S3.'Z:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_z'}),
+		sprintf('%-20s', 'Snap resolution is').
+			'X:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_x'}).
+			$S3.'Y:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_y'}),
+		sprintf('%-20s', 'Grid spacing is').
+			'X:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_x'}).
+			$S3.'Y:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_y'}),
 		'',
-		'Axis: '.$self->{'_axis'}.$S3.'Fill: '.$self->{'_fill'}.
-			$S3.'Grid: '.$self->{'_grid'}.$S3.'Ortho: '.$self->{'_ortho'}.
-			$S3.'Snap: '.$self->{'_snap'}.$S3.'Tablet: '.$self->{'_tablet'},
+		'Current layer:    '.$self->{'_current_layer'},
+		'Current color:    '.$current_color_print,
+		'Current linetype: '.$current_linetype_print,
+		'Current elevation:'.
+			sprintf('%10.'.$lup.'f', $self->{'_elevation'}).
+			$S2.'thickness:'.
+			sprintf('%10.'.$lup.'f', $self->{'_thickness'}),
+		'Axis '.lc($self->{'_axis'}).
+			$S2.'Fill '.lc($self->{'_fill'}).
+			$S2.'Grid '.lc($self->{'_grid'}).
+			$S2.'Ortho '.lc($self->{'_ortho'}).
+			$S2.'Qtext '.lc($self->{'_qtext'}).
+			$S2.'Snap '.lc($self->{'_snap'}).
+			$S2.'Tablet '.lc($self->{'_tablet'}),
+		'Object snap modes: '.$object_snap_modes,
 	);
 
 	print join "\n", @ret;
@@ -184,13 +258,12 @@ sub _process {
 sub _process_values {
 	my $self = shift;
 
-	my $dwg;
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
-		$dwg = CAD::Format::DWG::AC1_40->from_file($self->{'_dwg_file'});
+		$self->{'_dwg'} = CAD::Format::DWG::AC1_40->from_file($self->{'_dwg_file'});
 	} else {
-		$dwg = CAD::Format::DWG::AC1003->from_file($self->{'_dwg_file'});
+		$self->{'_dwg'} = CAD::Format::DWG::AC1003->from_file($self->{'_dwg_file'});
 	}
-	my $h = $dwg->header;
+	my $h = $self->{'_dwg'}->header;
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_entities'} = $h->number_of_entities;
@@ -202,11 +275,10 @@ sub _process_values {
 		$self->{'_current_layer'} = $h->current_layer;
 		$self->{'_current_color'} = $h->current_color;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
-		$self->{'_current_layer'} = 'TODO';
-		$self->{'_current_color'} = 'TODO';
-		$self->{'_current_linetype'} = 'TODO';
+		$self->{'_current_layer'} = $h->variables->current_layer_index;
+		$self->{'_current_color'} = $h->variables->current_color;
+		$self->{'_current_linetype'} = $h->variables->current_linetype;
 	}
-
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_snap'} = $h->snap ? 'On' : 'Off';
@@ -247,7 +319,11 @@ sub _process_values {
 		$self->{'_ortho'} = $h->variables->ortho ? 'On' : 'Off';
 	}
 
-	$self->{'_tablet'} = '?';
+	if ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_qtext'} = $h->variables->qtext ? 'On' : 'Off';
+	}
+
+	$self->{'_tablet'} = 'Off';
 
 	# TODO Used?
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
@@ -285,11 +361,11 @@ sub _process_values {
 	}
 
 	# Display.
-	# TODO Bad
-	$self->{'_display_x_min'} = 0; # $h->display_min_x
-	$self->{'_display_x_max'} = 0; # $h->display_min_y
-	$self->{'_display_y_min'} = 0; # $h->display_max_x
-	$self->{'_display_y_max'} = 0; # $h->display_max_y
+	# TODO Bad (aspect ratio)?
+	$self->{'_display_x_min'} = 0;
+	$self->{'_display_x_max'} = 14.7563;
+	$self->{'_display_y_min'} = 0;
+	$self->{'_display_y_max'} = 9;
 
 	# Insertion base.
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
@@ -298,6 +374,12 @@ sub _process_values {
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
 		$self->{'_insertion_base_x'} = $h->variables->insertion_base->x;
 		$self->{'_insertion_base_y'} = $h->variables->insertion_base->y;
+		$self->{'_insertion_base_z'} = $h->variables->insertion_base->z;
+	}
+
+	if ($self->{'_dwg_magic'} eq 'AC1003') {
+		$self->{'_elevation'} = $h->variables->elevation;
+		$self->{'_thickness'} = $h->variables->thickness;
 	}
 
 	return;
