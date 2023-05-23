@@ -143,6 +143,7 @@ sub _print_ac1003 {
 	my $limits_off = '(Off)';
 
 	my @drawing;
+	# XXX Title is common.
 	if ($self->{'_drawing_x_first'} != 1e+20 && $self->{'_drawing_x_second'} != 1e+20
 		&& $self->{'_drawing_y_first'} != -1e+20 && $self->{'_drawing_y_second'} != -1e+20) {
 		push @drawing,
