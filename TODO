@@ -4,7 +4,8 @@ TODO
 5. pretty version support (not legacy 1.40 autocad)
 6. Tests for pretty version
 7. Issue with number of entities (AC1.40), because contain tmp entities.
-9.
+9. Add test with extra entities.
+10.
 
 Applied
 =======
