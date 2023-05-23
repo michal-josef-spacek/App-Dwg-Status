@@ -27,7 +27,8 @@ Readonly::Hash our %COLORS => (
 	6 => 'magenta',
 	7 => 'white',
 );
-Readonly::Scalar our $MS => 'Model space uses';
+Readonly::Scalar our $MS => 'Model space';
+Readonly::Scalar our $PS => 'Paper space';
 
 our $VERSION = 0.01;
 
@@ -262,11 +263,19 @@ sub _print_ac1009 {
 	# TODO
 	my $limits_off = '(Off)';
 
+	# Space
+	my $space;
+	if ($self->{'_tilemode'}) {
+		$space = $MS;
+	} else {
+		$space = $PS;
+	}
+
 	my @drawing;
 	if ($self->{'_drawing_x_first'} != 1e+20 && $self->{'_drawing_x_second'} != 1e+20
 		&& $self->{'_drawing_y_first'} != -1e+20 && $self->{'_drawing_y_second'} != -1e+20) {
 		push @drawing,
-			sprintf('%-23s', $MS).
+			sprintf('%-23s', $space.' uses').
 				'X:'.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
 				$S.
@@ -277,7 +286,7 @@ sub _print_ac1009 {
 				$S.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'});
 	} else {
-		push @drawing, sprintf('%-23s', $MS).'*Nothing*';
+		push @drawing, sprintf('%-23s', $space.' uses').'*Nothing*';
 	}
 
 	my $current_layer = $self->{'_dwg'}->table_layers->layers->[$self->{'_current_layer'}];
@@ -307,16 +316,11 @@ sub _print_ac1009 {
 	# TODO
 	my $object_snap_modes = 'None';
 
-	my $model = sprintf('%-22s', 'Current space:');
-	if ($self->{'_tilemode'}) {
-		$model .= 'Model space';
-	} else {
-		$model .= 'Paper space';
-	}
+	my $model = sprintf('%-22s', 'Current space:').$space;
 
 	my @ret = (
 		$self->{'_entities'}.' entities in '.$dwg_file,
-		sprintf('%-23s', 'Model space limits are').
+		sprintf('%-23s', $space.' limits are').
 			'X:'.
 			sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
 			$S3.'Y:'.
