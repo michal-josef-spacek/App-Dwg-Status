@@ -91,6 +91,12 @@ sub _print_ac1_40 {
 
 	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
 
+	my @dim_arrow_size;
+	if (defined $self->{'_dim_arrow_size'}) {
+		push @dim_arrow_size, 'Dimension arrow size: '.
+			sprintf('%10.'.$lup.'f', $self->{'_dim_arrow_size'});
+	}
+
 	my @ret = (
 		'  '.$self->{'_entities'}.' entities in '.$dwg_file,
 		sprintf('%-21s', 'Limits are:').'X:'.sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
@@ -110,6 +116,7 @@ sub _print_ac1_40 {
 		'Snap resolution:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution'}).
 			'  Grid value:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit'}),
 		'Axis value:'.sprintf('%10.'.$lup.'f', $self->{'_axis_value'}),
+		@dim_arrow_size,
 		'Current layer:   '.$self->{'_current_layer'}.
 			'  Current color: '.$self->{'_current_color'},
 		'',
