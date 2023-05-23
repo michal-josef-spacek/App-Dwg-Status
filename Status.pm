@@ -27,6 +27,7 @@ Readonly::Hash our %COLORS => (
 	6 => 'magenta',
 	7 => 'white',
 );
+Readonly::Scalar our $MS => 'Model space uses';
 
 our $VERSION = 0.01;
 
@@ -262,11 +263,10 @@ sub _print_ac1009 {
 	my $limits_off = '(Off)';
 
 	my @drawing;
-	# XXX Title is common.
 	if ($self->{'_drawing_x_first'} != 1e+20 && $self->{'_drawing_x_second'} != 1e+20
 		&& $self->{'_drawing_y_first'} != -1e+20 && $self->{'_drawing_y_second'} != -1e+20) {
 		push @drawing,
-			sprintf('%-23s', 'Model space uses').
+			sprintf('%-23s', $MS).
 				'X:'.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
 				$S.
@@ -277,7 +277,7 @@ sub _print_ac1009 {
 				$S.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'});
 	} else {
-		push @drawing, sprintf('%-23s', 'Model space uses').'*Nothing*';
+		push @drawing, sprintf('%-23s', $MS).'*Nothing*';
 	}
 
 	my $current_layer = $self->{'_dwg'}->table_layers->layers->[$self->{'_current_layer'}];
