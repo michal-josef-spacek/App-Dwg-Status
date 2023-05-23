@@ -26,6 +26,7 @@ requires 'Class::Utils' => 0;
 requires 'Error::Pure' => 0;
 requires 'File::Spec::Functions' => 0;
 requires 'Getopt::Std' => 0;
+requires 'List::Util' => 0;
 requires 'Readonly' => 0;
 resources 'bugtracker' => 'https://github.com/michal-josef-spacek/App-Dwg-Status/issues',
 resources 'homepage' => 'https://github.com/michal-josef-spacek/App-Dwg-Status';

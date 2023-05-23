@@ -6,10 +6,12 @@ use warnings;
 use CAD::AutoCAD::Detect qw(detect_dwg_file);
 use CAD::Format::DWG::AC1_40;
 use CAD::Format::DWG::AC1003;
+use CAD::Format::DWG::AC1009;
 use Class::Utils qw(set_params);
 use Error::Pure qw(err);
 use File::Spec::Functions qw(splitpath);
 use Getopt::Std;
+use List::Util qw(any);
 use Readonly;
 
 Readonly::Scalar our $S => q{ };
@@ -78,6 +80,8 @@ sub _print {
 		$self->_print_ac1_40;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
 		$self->_print_ac1003;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1009') {
+		$self->_print_ac1009;
 	}
 
 	return;
@@ -246,13 +250,137 @@ sub _print_ac1003 {
 	return;
 }
 
+sub _print_ac1009 {
+	my $self = shift;
+
+	my $luf = $self->{'_linear_units_format'};
+	my $lup = $self->{'_linear_units_precision'};
+
+	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
+
+	# TODO
+	my $limits_off = '(Off)';
+
+	my @drawing;
+	# XXX Title is common.
+	if ($self->{'_drawing_x_first'} != 1e+20 && $self->{'_drawing_x_second'} != 1e+20
+		&& $self->{'_drawing_y_first'} != -1e+20 && $self->{'_drawing_y_second'} != -1e+20) {
+		push @drawing,
+			sprintf('%-23s', 'Model space uses').
+				'X:'.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
+				$S.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
+			sprintf('%-23s', '').
+				'Y:'.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
+				$S.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'});
+	} else {
+		push @drawing, sprintf('%-23s', 'Model space uses').'*Nothing*';
+	}
+
+	my $current_layer = $self->{'_dwg'}->table_layers->layers->[$self->{'_current_layer'}];
+	my $current_linetype = $self->{'_dwg'}->table_linetypes->linetypes->[$self->{'_current_layer'}];
+
+	my $current_color_print;
+	if ($self->{'_current_color'} == 256) {
+		$current_color_print = 'BYLAYER';
+	} else {
+		$current_color_print = $self->{'_current_color'};
+	}
+	$current_color_print .= ' -- ';
+	$current_color_print .= $current_layer->color;
+	if (exists $COLORS{$current_layer->color}) {
+		$current_color_print .= ' ('.$COLORS{$current_layer->color}.')';
+	}
+
+	my $current_linetype_print;
+	if ($self->{'_current_linetype'} == 32767) {
+		$current_linetype_print = 'BYLAYER';
+	} else {
+		$current_linetype_print = $self->{'_current_linetype'};
+	}
+	$current_linetype_print .= ' -- ';
+	$current_linetype_print .= $current_linetype->linetype_name;
+
+	# TODO
+	my $object_snap_modes = 'None';
+
+	my $model = sprintf('%-22s', 'Current space:');
+	if ($self->{'_tilemode'}) {
+		$model .= 'Model space';
+	} else {
+		$model .= 'Paper space';
+	}
+
+	my @ret = (
+		$self->{'_entities'}.' entities in '.$dwg_file,
+		sprintf('%-23s', 'Model space limits are').
+			'X:'.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_x_min'}).
+			$S3.'Y:'.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_y_min'}).
+			$S2.$limits_off,
+		sprintf('%-23s', '').
+			'X:'.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_x_max'}).
+			$S3.'Y:'.
+			sprintf('%10.'.$lup.'f', $self->{'_limits_y_max'}),
+		@drawing,
+		sprintf('%-23s', 'Display shows').
+			'X:'.
+			sprintf('%10.'.$lup.'f', $self->{'_display_x_min'}).
+			$S3.'Y:'.
+			sprintf('%10.'.$lup.'f', $self->{'_display_y_min'}),
+		sprintf('%-23s', '').
+			'X:'.
+			sprintf('%10.'.$lup.'f', $self->{'_display_x_max'}).
+			$S3.'Y:'.
+			sprintf('%10.'.$lup.'f', $self->{'_display_y_max'}),
+		sprintf('%-23s', 'Insertion base is').
+			'X:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_x'}).
+			$S3.'Y:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_y'}).
+			$S3.'Z:'.sprintf('%10.'.$lup.'f', $self->{'_insertion_base_z'}),
+		sprintf('%-23s', 'Snap resolution is').
+			'X:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_x'}).
+			$S3.'Y:'.sprintf('%10.'.$lup.'f', $self->{'_snap_resolution_y'}),
+		sprintf('%-23s', 'Grid spacing is').
+			'X:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_x'}).
+			$S3.'Y:'.sprintf('%10.'.$lup.'f', $self->{'_grid_unit_y'}),
+		'',
+		$model,
+		sprintf('%-22s', 'Current layer:').$self->{'_current_layer'},
+		sprintf('%-22s', 'Current color:').$current_color_print,
+		sprintf('%-22s', 'Current linetype:').$current_linetype_print,
+		sprintf('%-22s', 'Current elevation:').
+			sprintf('%0.'.$lup.'f', $self->{'_elevation'}).
+			$S2.'thickness:'.
+			sprintf('%10.'.$lup.'f', $self->{'_thickness'}),
+		'Axis '.lc($self->{'_axis'}).
+			$S2.'Fill '.lc($self->{'_fill'}).
+			$S2.'Grid '.lc($self->{'_grid'}).
+			$S2.'Ortho '.lc($self->{'_ortho'}).
+			$S2.'Qtext '.lc($self->{'_qtext'}).
+			$S2.'Snap '.lc($self->{'_snap'}).
+			$S2.'Tablet '.lc($self->{'_tablet'}),
+		'Object snap modes:   '.$object_snap_modes,
+	);
+
+	print join "\n", @ret;
+	print "\n";
+
+	return;
+}
+
 sub _process {
 	my $self = shift;
 
 	$self->{'_dwg_magic'} = detect_dwg_file($self->{'_dwg_file'});
 	if ($self->{'_dwg_magic'}) {
 		if ($self->{'_dwg_magic'} eq 'AC1.40'
-			|| $self->{'_dwg_magic'} eq 'AC1003') {
+			|| $self->{'_dwg_magic'} eq 'AC1003'
+			|| $self->{'_dwg_magic'} eq 'AC1009') {
 
 			return $self->_process_values;
 		} else {
@@ -268,8 +396,10 @@ sub _process_values {
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_dwg'} = CAD::Format::DWG::AC1_40->from_file($self->{'_dwg_file'});
-	} else {
+	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
 		$self->{'_dwg'} = CAD::Format::DWG::AC1003->from_file($self->{'_dwg_file'});
+	} else {
+		$self->{'_dwg'} = CAD::Format::DWG::AC1009->from_file($self->{'_dwg_file'});
 	}
 	my $h = $self->{'_dwg'}->header;
 
@@ -277,21 +407,32 @@ sub _process_values {
 		$self->{'_entities'} = $h->number_of_entities;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
 		$self->{'_entities'} = $h->variables->num_entities;
+	} elsif ($self->{'_dwg_magic'} eq 'AC1009') {
+		if (defined $self->{'_dwg'}->entities->entities->entities) {
+			# TODO Extra entities, block entities.
+			$self->{'_entities'} = @{$self->{'_dwg'}->entities->entities->entities};
+		} else {
+			$self->{'_entities'} = 0;
+		}
 	}
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_current_layer'} = $h->current_layer;
 		$self->{'_current_color'} = $h->current_color;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_current_layer'} = $h->variables->current_layer_index;
 		$self->{'_current_color'} = $h->variables->current_color;
 		$self->{'_current_linetype'} = $h->variables->current_linetype;
 	}
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		$self->{'_dim_arrow_size'} = $h->dim_arrowsize;
+	}
+
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_snap'} = $h->snap ? 'On' : 'Off';
 		$self->{'_snap_resolution'} = $h->snap_resolution;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_snap'} = $h->variables->snap ? 'On' : 'Off';
 		$self->{'_snap_resolution_x'} = $h->variables->snap_resolution->x;
 		$self->{'_snap_resolution_y'} = $h->variables->snap_resolution->y;
@@ -300,7 +441,7 @@ sub _process_values {
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_axis'} = $h->axis ? 'On' : 'Off';
 		$self->{'_axis_value'} = $h->axis_value->x;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_axis'} = $h->variables->axis ? 'On' : 'Off';
 		$self->{'_axis_value_x'} = $h->variables->axis_value->x;
 		$self->{'_axis_value_y'} = $h->variables->axis_value->y;
@@ -308,14 +449,14 @@ sub _process_values {
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_fill'} = $h->fill ? 'On' : 'Off';
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_fill'} = $h->variables->fill ? 'On' : 'Off';
 	}
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_grid'} = $h->grid ? 'On' : 'Off';
 		$self->{'_grid_unit'} = $h->grid_unit;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_grid'} = $h->variables->grid ? 'On' : 'Off';
 		$self->{'_grid_unit_x'} = $h->variables->grid_unit->x;
 		$self->{'_grid_unit_y'} = $h->variables->grid_unit->y;
@@ -323,11 +464,11 @@ sub _process_values {
 
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_ortho'} = $h->ortho ? 'On' : 'Off';
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_ortho'} = $h->variables->ortho ? 'On' : 'Off';
 	}
 
-	if ($self->{'_dwg_magic'} eq 'AC1003') {
+	if (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_qtext'} = $h->variables->qtext ? 'On' : 'Off';
 	}
 
@@ -337,7 +478,7 @@ sub _process_values {
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_linear_units_format'} = $h->linear_units_format;
 		$self->{'_linear_units_precision'} = $h->linear_units_precision;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_linear_units_format'} = $h->variables->linear_units_format;
 		$self->{'_linear_units_precision'} = $h->variables->linear_units_precision;
 	}
@@ -348,7 +489,7 @@ sub _process_values {
 		$self->{'_limits_y_min'} = $h->limits_min->y;
 		$self->{'_limits_x_max'} = $h->limits_max->x;
 		$self->{'_limits_y_max'} = $h->limits_max->y;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_limits_x_min'} = $h->variables->limits_min->x;
 		$self->{'_limits_y_min'} = $h->variables->limits_min->y;
 		$self->{'_limits_x_max'} = $h->variables->limits_max->x;
@@ -361,7 +502,7 @@ sub _process_values {
 		$self->{'_drawing_y_first'} = $h->drawing_first->y;
 		$self->{'_drawing_x_second'} = $h->drawing_second->x;
 		$self->{'_drawing_y_second'} = $h->drawing_second->y;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_drawing_x_first'} = $h->variables->drawing_first->x;
 		$self->{'_drawing_y_first'} = $h->variables->drawing_first->y;
 		$self->{'_drawing_x_second'} = $h->variables->drawing_second->x;
@@ -375,21 +516,31 @@ sub _process_values {
 		$self->{'_display_x_max'} = $h->limits_max->x;
 		$self->{'_display_y_min'} = 0;
 		$self->{'_display_y_max'} = $h->view_size;
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
+		my $aspect_ratio = $h->variables->aspect_ratio;
+		$self->{'_display_x_min'} = 0;
+		$self->{'_display_x_max'} = ($h->variables->view_size * $aspect_ratio);
+		$self->{'_display_y_min'} = 0;
+		$self->{'_display_y_max'} = $h->variables->limits_max->y;
 	}
 
 	# Insertion base.
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
 		$self->{'_insertion_base_x'} = $h->insertion_base->x;
 		$self->{'_insertion_base_y'} = $h->insertion_base->y;
-	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
+	} elsif (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_insertion_base_x'} = $h->variables->insertion_base->x;
 		$self->{'_insertion_base_y'} = $h->variables->insertion_base->y;
 		$self->{'_insertion_base_z'} = $h->variables->insertion_base->z;
 	}
 
-	if ($self->{'_dwg_magic'} eq 'AC1003') {
+	if (any { $self->{'_dwg_magic'} eq $_ } qw(AC1003 AC1009)) {
 		$self->{'_elevation'} = $h->variables->elevation;
 		$self->{'_thickness'} = $h->variables->thickness;
+	}
+
+	if ($self->{'_dwg_magic'} eq 'AC1009') {
+		$self->{'_tilemode'} = $h->variables->tile_mode;
 	}
 
 	return;
@@ -468,6 +619,7 @@ L<Class::Utils>,
 L<Error::Pure>,
 L<File::Spec::Functions>,
 L<Getopt::Std>,
+L<List::Util>,
 L<Readonly>.
 
 =head1 REPOSITORY
