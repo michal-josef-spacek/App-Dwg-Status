@@ -92,7 +92,7 @@ sub _print_ac1_40 {
 	my (undef, undef, $dwg_file) = splitpath($self->{'_dwg_file'});
 
 	my @dim_arrow_size;
-	if (defined $self->{'_dim_arrow_size'}) {
+	if ($self->{'_dim_arrow_size'}) {
 		push @dim_arrow_size, 'Dimension arrow size: '.
 			sprintf('%10.'.$lup.'f', $self->{'_dim_arrow_size'});
 	}

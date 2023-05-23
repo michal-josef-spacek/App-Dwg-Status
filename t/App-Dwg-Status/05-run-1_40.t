@@ -3,7 +3,7 @@ use warnings;
 
 use App::Dwg::Status;
 use File::Object;
-use Test::More 'tests' => 2;
+use Test::More 'tests' => 3;
 use Test::NoWarnings;
 use Test::Output;
 
@@ -20,15 +20,15 @@ Limits are:          X:    0.0000   12.0000
                      Y:    0.0000    9.0000
 Drawing uses:        X:    0.0000    0.0000
                      Y:    0.0000    0.0000
-Display shows:       X:    0.0000    0.0000
-                     Y:    0.0000    0.0000
+Display shows:       X:    0.0000   12.0000
+                     Y:    0.0000    9.2696
 Insertion base is:   X:    0.0000
                      Y:    0.0000
 Snap resolution:    1.0000  Grid value:    0.0000
 Axis value:    0.0000
 Current layer:   1  Current color: 15
 
-Axis: Off   Fill: On   Grid: Off   Ortho: Off   Snap: Off   Tablet: ?
+Axis: Off   Fill: On   Grid: Off   Ortho: Off   Snap: Off   Tablet: Off
 END
 stdout_is(
 	sub {
@@ -58,7 +58,7 @@ Axis value:    0.0000
 Dimension arrow size:     1.2345
 Current layer:   1  Current color: 15
 
-Axis: Off   Fill: On   Grid: Off   Ortho: Off   Snap: Off   Tablet: ?
+Axis: Off   Fill: On   Grid: Off   Ortho: Off   Snap: Off   Tablet: Off
 END
 stdout_is(
 	sub {
