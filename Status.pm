@@ -278,12 +278,12 @@ sub _print_ac1009 {
 			sprintf('%-23s', $space.' uses').
 				'X:'.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_first'}).
-				$S.
-				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}),
+				$S3.'Y:'.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}),
 			sprintf('%-23s', '').
-				'Y:'.
-				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_first'}).
-				$S.
+				'X:'.
+				sprintf('%10.'.$lup.'f', $self->{'_drawing_x_second'}).
+				$S3.'Y:'.
 				sprintf('%10.'.$lup.'f', $self->{'_drawing_y_second'});
 	} else {
 		push @drawing, sprintf('%-23s', $space.' uses').'*Nothing*';
@@ -412,11 +412,18 @@ sub _process_values {
 	} elsif ($self->{'_dwg_magic'} eq 'AC1003') {
 		$self->{'_entities'} = $h->variables->num_entities;
 	} elsif ($self->{'_dwg_magic'} eq 'AC1009') {
+		$self->{'_entities'} = 0;
 		if (defined $self->{'_dwg'}->entities->entities->entities) {
-			# TODO Extra entities, block entities.
-			$self->{'_entities'} = @{$self->{'_dwg'}->entities->entities->entities};
-		} else {
-			$self->{'_entities'} = 0;
+			$self->{'_entities'} += grep { $_->entity_type > 0 && $_->entity_type != 18 }
+				@{$self->{'_dwg'}->entities->entities->entities};
+		}
+		if (defined $self->{'_dwg'}->entities_block->entities_block->entities) {
+			$self->{'_entities'} += grep { $_->entity_type > 0 && $_->entity_type != 18 }
+				@{$self->{'_dwg'}->entities_block->entities_block->entities};
+		}
+		if (defined $self->{'_dwg'}->entities_extra->entities_extra->entities) {
+			$self->{'_entities'} += grep { $_->entity_type > 0 && $_->entity_type != 18 }
+				@{$self->{'_dwg'}->entities_extra->entities_extra->entities};
 		}
 	}
 

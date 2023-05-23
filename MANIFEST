@@ -31,6 +31,7 @@ t/data/AC1.40/DIM_ARROW_SIZE.DWG
 t/data/AC1003/BLANK.DWG
 t/data/AC1003/DRAWING.DWG
 t/data/AC1009/BLANK.DWG
+t/data/AC1009/COMPLEX.DWG
 t/data/AC1009/TILEMODE.DWG
 xt/App-Dwg-Status/01-pod_coverage.t
 xt/App-Dwg-Status/02-pod.t
