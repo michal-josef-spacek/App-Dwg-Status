@@ -22,6 +22,7 @@ recursive_author_tests('xt');
 requires 'CAD::AutoCAD::Detect' => 0.02;
 requires 'CAD::Format::DWG::AC1_40' => 0;
 requires 'CAD::Format::DWG::AC1003' => 0;
+requires 'CAD::Format::DWG::AC1009' => 0;
 requires 'Class::Utils' => 0;
 requires 'Error::Pure' => 0;
 requires 'File::Spec::Functions' => 0;
