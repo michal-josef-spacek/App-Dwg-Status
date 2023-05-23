@@ -369,11 +369,13 @@ sub _process_values {
 	}
 
 	# Display.
-	# TODO Bad (aspect ratio)?
-	$self->{'_display_x_min'} = 0;
-	$self->{'_display_x_max'} = 14.7563;
-	$self->{'_display_y_min'} = 0;
-	$self->{'_display_y_max'} = 9;
+	if ($self->{'_dwg_magic'} eq 'AC1.40') {
+		my $aspect_ratio = $h->aspect_ratio;
+		$self->{'_display_x_min'} = 0;
+		$self->{'_display_x_max'} = $h->limits_max->x;
+		$self->{'_display_y_min'} = 0;
+		$self->{'_display_y_max'} = $h->view_size;
+	}
 
 	# Insertion base.
 	if ($self->{'_dwg_magic'} eq 'AC1.40') {
